@@ -51,7 +51,7 @@ jobs:
           command: |
             git config --global user.email "circleci@ci.com"
             git config --global user.name "circleci-bot"
-            git add k8s/deployment.yaml
+            git add kubernetes/deployment.yaml
             git commit -m "Update image to $IMAGE_NAME:$TAG [ci skip]" || echo "No changes to commit"
             git push origin $CIRCLE_BRANCH
 
