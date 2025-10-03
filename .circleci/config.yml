@@ -11,7 +11,7 @@ jobs:
       - checkout
 
       # Install Docker
-      - setup_remote_docker:
+      - setup_remote_docker
         #  version: 20.10.18
 
       # Build Docker image
