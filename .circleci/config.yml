@@ -1,0 +1,61 @@
+version: 2.1
+
+orbs:
+  docker: circleci/docker@2.2.0
+
+jobs:
+  build-and-push:
+    docker:
+      - image: cimg/node:18.17  # node for building frontend if needed
+    steps:
+      - checkout
+
+      # Install Docker
+      - setup_remote_docker:
+          version: 20.10.18
+
+      # Build Docker image
+      - run:
+          name: Build Docker image
+          command: |
+            IMAGE_NAME="ankhot/todo-app"
+            TAG="${CIRCLE_SHA1:0:7}"   # short commit hash
+            echo "Building $IMAGE_NAME:$TAG"
+            docker build -t $IMAGE_NAME:$TAG .
+
+      # Login to DockerHub
+      - run:
+          name: Docker Login
+          command: |
+            echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+
+      # Push image
+      - run:
+          name: Push Docker image
+          command: |
+            IMAGE_NAME="ankhot/todo-app"
+            TAG="${CIRCLE_SHA1:0:7}"
+            docker push $IMAGE_NAME:$TAG
+
+      # Update deployment.yaml with new tag
+      - run:
+          name: Update Kubernetes manifest
+          command: |
+            IMAGE_NAME="ankhot/todo-app"
+            TAG="${CIRCLE_SHA1:0:7}"
+            sed -i "s|image: .*$|image: $IMAGE_NAME:$TAG|" kubernetes/deployment.yaml
+
+      # Commit and push back to GitHub
+      - run:
+          name: Commit manifest changes
+          command: |
+            git config --global user.email "circleci@ci.com"
+            git config --global user.name "circleci-bot"
+            git add k8s/deployment.yaml
+            git commit -m "Update image to $IMAGE_NAME:$TAG [ci skip]" || echo "No changes to commit"
+            git push origin $CIRCLE_BRANCH
+
+workflows:
+  build-deploy:
+    jobs:
+      - build-and-push
