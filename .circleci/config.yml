@@ -18,7 +18,7 @@ jobs:
       - run:
           name: Build Docker image
           command: |
-            IMAGE_NAME="ankhot/todo-app"
+            IMAGE_NAME="ankhot92/todo-app"
             TAG="${CIRCLE_SHA1:0:7}"   # short commit hash
             echo "Building $IMAGE_NAME:$TAG"
             docker build -t $IMAGE_NAME:$TAG .
@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Push Docker image
           command: |
-            IMAGE_NAME="ankhot/todo-app"
+            IMAGE_NAME="ankhot92/todo-app"
             TAG="${CIRCLE_SHA1:0:7}"
             docker push $IMAGE_NAME:$TAG
 
@@ -41,7 +41,7 @@ jobs:
       - run:
           name: Update Kubernetes manifest
           command: |
-            IMAGE_NAME="ankhot/todo-app"
+            IMAGE_NAME="ankhot92/todo-app"
             TAG="${CIRCLE_SHA1:0:7}"
             sed -i "s|image: .*$|image: $IMAGE_NAME:$TAG|" kubernetes/deployment.yaml
 
