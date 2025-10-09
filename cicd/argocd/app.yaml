@@ -6,13 +6,15 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/<your-username>/<your-repo>.git'
+    repoURL: 'https://github.com/ankitakhot92/todo-app.git'
     targetRevision: main
-    path: k8s-manifests
+    path: kubernetes
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: default
+    namespace: demo
   syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
     automated:
       prune: true
       selfHeal: true

@@ -18,4 +18,4 @@ spec:
         - name: todo-app
           image: ankhot/todo-app:ffbe8dd
           ports:
-            - containerPort: 3000
+            - containerPort: 80
